@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BRAND</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--ink:#000;--mute:#8c8c8c;--line:#e4e4e4;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--ink:#fff;--mute:#777;--line:#222;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#000;--ink:#fff;--mute:#777;--line:#222;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.45 "Inter Tight","Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+main{max-width:640px;padding:28px 22px 80px}
+h1{font-size:17px;font-weight:500;margin:0 0 14px}
+p{margin:0 0 14px;max-width:46ch}
+.mute{color:var(--mute)}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+button:hover,a:hover{opacity:.5}
+:focus-visible{outline:1px solid var(--ink);outline-offset:3px}
+a{color:inherit;text-decoration:none}
+section{margin-top:44px}
+.row{display:grid;grid-template-columns:1fr auto auto;gap:0 18px;align-items:baseline;padding:2px 0}
+.row .st{color:var(--mute);min-width:6.5ch;text-align:right}
+.gal{display:none;margin:12px 0 22px}
+.gal.open{display:block}
+.track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.track::-webkit-scrollbar{display:none}
+.slide{flex:0 0 100%;aspect-ratio:4/5;scroll-snap-align:start;background:var(--line);display:grid;place-items:center;color:var(--mute);overflow:hidden}
+.slide img{width:100%;height:100%;object-fit:cover;display:block}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px}
+.sizes{display:flex;gap:12px}
+.sizes button[aria-pressed="true"]{text-decoration:underline;text-underline-offset:4px}
+.sizes button.out{color:var(--mute);text-decoration:line-through;cursor:default}
+.sizes button.out:hover{opacity:1}
+.note{margin-top:8px;min-height:1.45em}
+footer{margin-top:44px;display:flex;flex-direction:column;gap:2px}
+@media (prefers-reduced-motion:no-preference){.track{scroll-behavior:smooth}}
+</style>
+</head>
+<body>
+<main>
+  <h1>BRAND</h1>
+  <p>Drop 001. Three pieces, small run, made in Malaysia. Once they’re gone, they’re gone.</p>
+  <p class="mute">Click any [piece] title to see it. Click the title again to close it. Swipe left to scrub through.</p>
+
+  <section aria-label="Countdown">
+    <p><span class="mute">Opens</span> <span id="when">5 December 2026, 8pm</span></p>
+    <p id="count">—</p>
+  </section>
+
+  <section id="pieces" aria-label="Pieces"></section>
+
+  <section aria-label="Notes">
+    <p class="mute">Sizing runs boxy. Order by email, we reply with payment details within a day. Shipping across Malaysia and Singapore.</p>
+  </section>
+
+  <footer>
+    <a href="mailto:hello@brand.com">Email</a>
+    <a href="https://www.instagram.com/" rel="noopener">Instagram</a>
+  </footer>
+</main>
+
+<script>
+// ---- EDIT HERE ----
+var DROP_DATE = new Date("2026-12-05T20:00:00+08:00");
+var EMAIL = "hello@brand.com";
+var ITEMS = [
+  {name:"heavy tee", price:"RM 89", status:"Open", sizes:{S:1,M:1,L:1,XL:0}, imgs:["","",""]},
+  {name:"zip hoodie", price:"RM 219", status:"Open", sizes:{S:0,M:1,L:1,XL:1}, imgs:["","",""]},
+  {name:"cap", price:"RM 59", status:"Sold out", sizes:{}, imgs:["",""]}
+];
+// imgs: put an image path per slide, e.g. "img/tee-1.jpg". Empty shows a grey placeholder.
+// -------------------
+
+var root = document.getElementById("pieces");
+var openIdx = -1, chosen = {};
+
+function el(tag, cls, text){ var e = document.createElement(tag); if(cls) e.className = cls; if(text != null) e.textContent = text; return e; }
+
+ITEMS.forEach(function(it, i){
+  var wrap = el("div");
+  var row = el("div","row");
+  var title = el("button",null,"[" + it.name + "]");
+  title.setAttribute("aria-expanded","false");
+  row.appendChild(title);
+  row.appendChild(el("span","mute",it.price));
+  row.appendChild(el("span","st",it.status));
+  wrap.appendChild(row);
+
+  var gal = el("div","gal");
+  var track = el("div","track");
+  it.imgs.forEach(function(src, n){
+    var s = el("div","slide");
+    if(src){ var im = new Image(); im.src = src; im.alt = it.name + " " + (n+1); s.appendChild(im); }
+    else s.textContent = it.name + " " + (n+1);
+    track.appendChild(s);
+  });
+  gal.appendChild(track);
+
+  var meta = el("div","meta");
+  var count = el("span","mute","1/" + it.imgs.length);
+  meta.appendChild(count);
+  var soldOut = it.status === "Sold out";
+  if(!soldOut){
+    var sizes = el("div","sizes");
+    Object.keys(it.sizes).forEach(function(sz){
+      var b = el("button", it.sizes[sz] ? "" : "out", sz);
+      b.setAttribute("aria-pressed","false");
+      if(!it.sizes[sz]) b.disabled = true;
+      b.onclick = function(){
+        chosen[i] = sz;
+        sizes.querySelectorAll("button").forEach(function(x){ x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+        reserve.href = "mailto:" + EMAIL + "?subject=" + encodeURIComponent("Order: " + it.name + " / " + sz);
+        reserve.removeAttribute("aria-disabled"); reserve.style.opacity = "";
+      };
+      sizes.appendChild(b);
+    });
+    meta.appendChild(sizes);
+    var reserve = el("a",null,"[order]");
+    reserve.href = "#"; reserve.setAttribute("aria-disabled","true"); reserve.style.opacity = ".4";
+    reserve.onclick = function(e){ if(reserve.getAttribute("aria-disabled")){ e.preventDefault(); note.textContent = "Pick a size first."; } };
+    meta.appendChild(reserve);
+  }
+  gal.appendChild(meta);
+  var note = el("div","note mute"); gal.appendChild(note);
+  wrap.appendChild(gal);
+  root.appendChild(wrap);
+
+  track.addEventListener("scroll", function(){
+    var n = Math.round(track.scrollLeft / track.clientWidth) + 1;
+    count.textContent = n + "/" + it.imgs.length;
+  });
+
+  title.onclick = function(){
+    var wasOpen = gal.classList.contains("open");
+    root.querySelectorAll(".gal").forEach(function(g){ g.classList.remove("open"); });
+    root.querySelectorAll(".row button").forEach(function(b){ b.setAttribute("aria-expanded","false"); });
+    if(!wasOpen){ gal.classList.add("open"); title.setAttribute("aria-expanded","true"); }
+  };
+});
+
+var cEl = document.getElementById("count");
+function tick(){
+  var d = DROP_DATE - new Date();
+  if(d <= 0){ cEl.textContent = "Open now."; return; }
+  var s = Math.floor(d/1000), days = Math.floor(s/86400), h = Math.floor(s%86400/3600), m = Math.floor(s%3600/60), sec = s%60;
+  var p = function(n){ return String(n).padStart(2,"0"); };
+  cEl.textContent = days + "d " + p(h) + "h " + p(m) + "m " + p(sec) + "s";
+}
+tick(); setInterval(tick, 1000);
+</script>
+</body>
+</html>
