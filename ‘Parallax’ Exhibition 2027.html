@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>‘Parallax’ Exhibition 2027</title>
+<style>
+:root{--bg:#f1f1f1;--ink:#000;--mute:#8c8c8c;--ph:#e4e4e4;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.4 "Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+main{max-width:1000px;margin:0 auto;padding:28px 22px 80px}
+header{margin-bottom:56px}
+#logo{display:block;height:40px;width:auto;max-width:100%;margin-bottom:22px;font-weight:700}
+p{margin:0}
+.mute{color:var(--mute)}
+a{color:inherit;text-decoration:none}
+a:hover{opacity:.5}
+:focus-visible{outline:1px solid var(--ink);outline-offset:3px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:56px 28px}
+.card{display:block;text-align:center}
+.pic{aspect-ratio:4/5;background:var(--ph);display:grid;place-items:center;overflow:hidden;margin-bottom:14px;color:var(--mute);font-size:13px}
+.pic img{width:100%;height:100%;object-fit:contain;display:block}
+.name{font-weight:700;font-size:14px}
+.price{font-weight:700;font-size:14px;margin-top:2px}
+footer{margin-top:72px;display:flex;flex-direction:column;gap:2px}
+@media (max-width:640px){.grid{grid-template-columns:repeat(2,1fr);gap:40px 16px}}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <!-- 1. LOGO: change src below to your image file, e.g. "logo.png" -->
+    <img id="logo" src="logo.png" alt="BRAND" onerror="this.replaceWith(document.createTextNode('BRAND'))">
+    <p>‘Parallax’ Exhibition 2027</p>
+    <p>UCSI Diploma in Architectural Studies</p>
+  </header>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    <a href="mailto:hello@brand.com">Email</a>
+    <a href="https://www.instagram.com/" rel="noopener">Instagram</a>
+  </footer>
+</main>
+
+<script>
+// ---- EDIT HERE ----
+var EMAIL = "hello@brand.com";
+// 2. PRODUCT IMAGES: put an image file path in each "img", e.g. "img/transcend.png"
+var ITEMS = [
+  {name:"Transcend", price:"RM 36", img:""},
+  {name:"Architecture is Lived", price:"RM 36", img:""},
+  {name:"See Things Differently", price:"RM 36", img:""},
+  {name:"Human Scaled", price:"RM 36", img:""},
+  {name:"3AM", price:"RM 36", img:""},
+  {name:"untitled", price:"RM 36", img:""},
+  {name:"‘Parallax’ Hoodie", price:"RM 76", img:""},
+  {name:"‘Parallax’ Lanyard", price:"RM 15", img:""},
+  {name:"‘Parallax’ Cap", price:"RM 20", img:""}
+];
+// -------------------
+var grid = document.getElementById("grid");
+ITEMS.forEach(function(it){
+  var a = document.createElement("a");
+  a.className = "card";
+  a.href = "mailto:" + EMAIL + "?subject=" + encodeURIComponent("Order: " + it.name);
+  var pic = document.createElement("div"); pic.className = "pic";
+  if(it.img){ var im = new Image(); im.src = it.img; im.alt = it.name; pic.appendChild(im); }
+  else pic.textContent = "photo";
+  var n = document.createElement("p"); n.className = "name"; n.textContent = it.name;
+  var p = document.createElement("p"); p.className = "price"; p.textContent = it.price;
+  a.appendChild(pic); a.appendChild(n); a.appendChild(p);
+  grid.appendChild(a);
+});
+</script>
+</body>
+</html>
